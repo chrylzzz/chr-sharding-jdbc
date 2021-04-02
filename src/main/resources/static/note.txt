@@ -1,0 +1,4 @@
+#                 inline:
+                  # 分库的规则 用 user_id 这个字段来分库 总共有两个库 mysharding（user0）与mysharding0（user1）与mysharding1
+#                   shardingColumn: order_no
+#                   algorithmExpression: mysharding${order_no % 2}

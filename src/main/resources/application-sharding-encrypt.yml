@@ -1,0 +1,34 @@
+spring:
+  shardingsphere:
+      datasource:
+        names: myshardingwrite
+        myshardingwrite:
+          type: com.alibaba.druid.pool.DruidDataSource
+          url: jdbc:mysql://127.0.0.1:3306/mysharding_write?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
+#          url: jdbc:mysql://127.0.0.1:3306/mysharding_read?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
+          username: root
+          password: chryl
+          driver-class-name: com.mysql.cj.jdbc.Driver
+      # 自动加解密
+      encrypt:
+        encryptors:
+          encryptor_aes:
+            type: aes #加密算法，支持取值有：aes,md5，也可以自定义算法
+            props:
+              aes.key.value: E896062C5038DA65 #aes秘钥
+        tables:
+          goods: #表名
+            columns:
+              goods_name: #字段名
+                cipherColumn: goods_name #加密字段
+                encryptor: encryptor_aes #加密方式
+      props:
+         sql:
+          show: true
+         query:
+          with:
+            cipher:
+              column: true
+
+mybatis:
+  mapper-locations: classpath*:sqlMapper/*.xml

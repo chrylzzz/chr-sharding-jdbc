@@ -1,0 +1,44 @@
+# sharding jdbc 分库分表
+spring:
+  shardingsphere:
+      datasource:
+        names: mysharding,mysharding0,mysharding1
+        mysharding:
+          type: com.alibaba.druid.pool.DruidDataSource
+          url: jdbc:mysql://127.0.0.1:3306/mysharding?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
+          username: root
+          password: chryl
+          driver-class-name: com.mysql.cj.jdbc.Driver
+        mysharding0:
+          type: com.alibaba.druid.pool.DruidDataSource
+          url: jdbc:mysql://127.0.0.1:3306/mysharding_0?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
+          username: root
+          password: chryl
+          driver-class-name: com.mysql.cj.jdbc.Driver
+        mysharding1:
+          type: com.alibaba.druid.pool.DruidDataSource
+          url: jdbc:mysql://127.0.0.1:3306/mysharding_1?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
+          username: root
+          password: chryl
+          driver-class-name: com.mysql.cj.jdbc.Driver
+      ## 分表分库
+      sharding:
+        defaultDataSourceName: mysharding #默认数据源
+        # 按表来区分
+        tables:
+            my_order: #表名
+              # 配置数据节点
+              actualDataNodes: mysharding0.my_order_${0..1},mysharding1.my_order_${2..3}
+              databaseStrategy: # 分库策略
+                 standard: #标准分片策略
+                   shardingColumn: order_no #字段名
+                   preciseAlgorithmClassName: com.chryl.sharding.config.DB2x2Algorithm
+              tableStrategy: # 分表策略
+                 standard:
+                    shardingColumn: order_no #字段名
+                    preciseAlgorithmClassName: com.chryl.sharding.config.Table2x2Algorithm
+      props:
+         sql:
+          show: true # 开启SQL显示，默认值: false，注意：仅配置读写分离时不会打印日志！！！
+mybatis:
+  mapper-locations: classpath*:sqlMapper/*.xml

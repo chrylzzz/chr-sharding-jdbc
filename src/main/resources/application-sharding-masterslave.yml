@@ -1,0 +1,35 @@
+# sharding jdbc 读写分离
+spring:
+  shardingsphere:
+      datasource:
+        names: myshardingread,myshardingwrite
+        myshardingread:
+          type: com.alibaba.druid.pool.DruidDataSource
+          url: jdbc:mysql://127.0.0.1:3306/mysharding_read?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
+          username: root
+          password: chryl
+          driver-class-name: com.mysql.cj.jdbc.Driver
+        myshardingwrite:
+          type: com.alibaba.druid.pool.DruidDataSource
+          url: jdbc:mysql://127.0.0.1:3306/mysharding_write?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
+          username: root
+          password: chryl
+          driver-class-name: com.mysql.cj.jdbc.Driver
+      # 读写分离
+      masterslave:
+        master-data-source-name: myshardingwrite
+        slave-data-source-names: myshardingread # names可配置多个数据源的名称
+        # round_robin(轮询)，random（随机）
+        load-balance-algorithm-type: round_robin # 配置从库选择策略，提供轮询与随机
+        name: datasource
+      props:
+         sql:
+          show: true # 开启SQL显示，默认值: false，注意：仅配置读写分离时不会打印日志！！！
+
+#
+mybatis:
+  mapper-locations:
+    - classpath*:sqlMapper/*.xml
+    - classpath:dao/*.xml
+    - classpath:mappers/*.xml
+    - classpath*:com/**/mapper/*.xml
